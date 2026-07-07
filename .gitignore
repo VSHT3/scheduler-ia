@@ -1,0 +1,7 @@
+# Python
+__pycache__/
+*.pyc
+
+# Editors / OS
+.obsidian/
+.DS_Store
