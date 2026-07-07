@@ -1,5 +1,7 @@
 - These will hold the main "task"
 - I will be creating and storing these using my program
+- events are repeatable
+  - tasks aren't. if a task is repeatable, it should become an event instead. (my rationale)
 
 
 ```python
@@ -13,4 +15,3 @@ task = {
 ```
 
 \* = mandatory
-
