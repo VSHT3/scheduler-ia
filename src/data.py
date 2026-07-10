@@ -2,10 +2,10 @@
 from datetime import datetime, time
 
 
-# NAME PARSER
+# NAME CHECKER
 def _parse_name(text, label):
     if not isinstance(text, str):
-        raise ValueError(f"{label} must be text, e.g. 'Task 1'.")
+        raise ValueError(f"{label} must be text, e.g. 'Task 1', not '{text}'.")
     text = text.strip()
     if text == "":
         raise ValueError(f"{label} cannot be empty.")
@@ -17,24 +17,24 @@ def _parse_name(text, label):
 def _parse_iso_datetime(text, label, parser):
     if not isinstance(text, str):  # checks for input being text
         raise ValueError(
-            f"{label} must be text, e.g. '2027-07-11T17:00' for datetime or '08:00' for time."
+            f"{label} must be text, not '{text}', e.g. '2027-07-11T17:00' for datetime or '08:00' for time."
         )
     try:
         value = parser(text)
         # tries converting the str to ISO date
     except ValueError:
         raise ValueError(
-            f"{label} must be a valid time or date-time, e.g. 08:00 or 2027-07-11T17:00."
+            f"{label} must be a valid time or date-time, not '{text}', e.g. 08:00 or 2027-07-11T17:00."
         )
     # 15 minute rule + no seconds
     if value.minute % 15 != 0 or value.second != 0:
         raise ValueError(
-            f"{label} minutes must be :00, :15, :30 or :45. Seconds are not permitted."
+            f"{label} minutes can't be '{value}' must be :00, :15, :30 or :45 and seconds are not permitted."
         )
     return value
 
 
-# IS IN LIST
+# IS IN LIST CHECKER
 def _is_in_list(value, allowed, label):
     if isinstance(value, str):
         value = value.strip().lower()  # sanitize if string
@@ -43,14 +43,15 @@ def _is_in_list(value, allowed, label):
     return value
 
 
+# DURATION CHECKER
 # duration must be a whole number of minutes, positive, divisible by 15
 def _minute_duration_parser(duration, label):
     if not isinstance(duration, int):
-        raise ValueError(f"{label} must be a whole number of minutes.")
+        raise ValueError(f"{label} can't be '{duration}', and must be a whole number of minutes.")
     if duration <= 0:
-        raise ValueError(f"{label} must be greater than zero.")
+        raise ValueError(f"{label} can't be '{duration}', and must be greater than zero.")
     if duration % 15 != 0:
-        raise ValueError(f"{label} must be a multiple of 15 minutes.")
+        raise ValueError(f"{label} can't be '{duration}', and must be a multiple of 15 minutes.")
     return duration
 
 
@@ -112,6 +113,7 @@ def make_event(
     # VALIDATE temporality
     if end <= start:
         raise ValueError("Event must start before it ends.")
+
     event = {
         "name": name,
         "start": start,
@@ -133,9 +135,9 @@ def make_config(workstart, workend, daily_cap, horizon, heuristic="edf"):
 
     # HORIZON
     if not isinstance(horizon, int):
-        raise ValueError("Horizon must be a whole number of days.")
+        raise ValueError(f"Horizon must be a whole number of days, not '{horizon}'.")
     if horizon <= 0:
-        raise ValueError("Horizon must be greater than zero.")
+        raise ValueError(f"Horizon must be greater than zero, not '{horizon}'.")
 
     # HEURISTIC
     heuristic = _is_in_list(heuristic, ("edf", "priority"), "Config heuristic")
