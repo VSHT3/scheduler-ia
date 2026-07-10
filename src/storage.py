@@ -45,8 +45,11 @@ def save(path, tasks, events, config):
 
 # LOAD
 def load(path):
-    with open(path, "r") as file:
-        all_data = json.load(file) #loads a dictionary of 2 lists and 1 dictionary into all_data
+    try:
+        with open(path, "r") as file: # tries opening our data file if we have it
+            all_data = json.load(file) #loads a dictionary of 2 lists and 1 dictionary into all_data
+    except FileNotFoundError:
+        return [],[],data.make_config("08:00","22:00",300,7,"edf") # if we don't have a data file, it creates one with empty events and tasks, and a default config
 
     # re-validate tasks by checking each list entry (a dict) with make_task and return them into a single list
     tasks = []
@@ -54,15 +57,18 @@ def load(path):
         clean_task = data.make_task(task["name"],task["duration"],task["deadline"],task["priority"],task["tags"])
         tasks.append(clean_task)
 
-    # re-validate events by checking each list entry (a dict) with make_event and return them into a single list
-    events = []
-    for event in all_data["events"]:
-        clean_event = data.make_event(event["name"],event["start"],event["end"],event["repeat"])
-        events.append(clean_event)
+    try:
+        # re-validate events by checking each list entry (a dict) with make_event and return them into a single list
+        events = []
+        for event in all_data["events"]:
+            clean_event = data.make_event(event["name"],event["start"],event["end"],event["repeat"])
+            events.append(clean_event)
 
-    #re-validate config (just a dict) with make_config
-    dirty_config = all_data["config"]
-    config = data.make_config(dirty_config["workstart"],dirty_config["workend"],dirty_config["daily_cap"],dirty_config["horizon"],dirty_config["heuristic"])
+        #re-validate config (just a dict) with make_config
+        dirty_config = all_data["config"]
+        config = data.make_config(dirty_config["workstart"],dirty_config["workend"],dirty_config["daily_cap"],dirty_config["horizon"],dirty_config["heuristic"])
 
-    #return everything
-    return tasks,events,config
+        #return everything
+        return tasks,events,config
+    except (ValueError, KeyError) as error:
+        raise ValueError(f"Data file '{path}' is corrputed: {error}")
