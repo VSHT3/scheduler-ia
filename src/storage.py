@@ -51,13 +51,13 @@ def load(path):
     except FileNotFoundError:
         return [],[],data.make_config("08:00","22:00",300,7,"edf") # if we don't have a data file, it creates one with empty events and tasks, and a default config
 
-    # re-validate tasks by checking each list entry (a dict) with make_task and return them into a single list
-    tasks = []
-    for task in all_data["tasks"]:
-        clean_task = data.make_task(task["name"],task["duration"],task["deadline"],task["priority"],task["tags"])
-        tasks.append(clean_task)
-
     try:
+        # re-validate tasks by checking each list entry (a dict) with make_task and return them into a single list
+        tasks = []
+        for task in all_data["tasks"]:
+            clean_task = data.make_task(task["name"],task["duration"],task["deadline"],task["priority"],task["tags"])
+            tasks.append(clean_task)
+
         # re-validate events by checking each list entry (a dict) with make_event and return them into a single list
         events = []
         for event in all_data["events"]:
@@ -71,4 +71,4 @@ def load(path):
         #return everything
         return tasks,events,config
     except (ValueError, KeyError) as error:
-        raise ValueError(f"Data file '{path}' is corrputed: {error}")
+        raise ValueError(f"Data file '{path}' is corrupted: {error}")
