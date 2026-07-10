@@ -48,3 +48,5 @@ def load(path):
     with open(path, "r") as file:
         all_data = json.load(file)
     return all_data
+
+# TODO: DOUBLE CHECK BY REUSING make defs from @data.py
