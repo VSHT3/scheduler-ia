@@ -1,4 +1,4 @@
-# yap here
+# storage.py saves and loads all events, tasks, and config into a single json, then revalidates all data using data.py defs to ensure integrity
 import json
 import data # imports data.py for data.def references
 
@@ -76,5 +76,6 @@ def load(path):
 
         #return everything
         return tasks,events,config
+
     except (ValueError, KeyError) as error:
         raise ValueError(f"Data file '{path}' is corrupted at {section} #{index} \n{error}")
