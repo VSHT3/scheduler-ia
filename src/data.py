@@ -27,7 +27,7 @@ def _parse_iso_datetime(text, label, parser):
             f"{label} must be a valid time or date-time, not '{text}', e.g. 08:00 or 2027-07-11T17:00."
         )
     # 15 minute rule + no seconds
-    if value.minute % 15 != 0 or value.second != 0:
+    if value.minute % 15 != 0 or value.second != 0: # everything snaps to a 15-min grid, keeps the scheduler tidy
         raise ValueError(
             f"{label} minutes can't be '{value}' must be :00, :15, :30 or :45 and seconds are not permitted."
         )
@@ -74,6 +74,7 @@ def make_task(name, duration, deadline, priority, tags=None):
     if tags is None:
         tags = []  # -> start from an empty list
 
+    # clean up the tags a bit so "#CS", "cs ", "Cs" all end up as the same "cs"
     clean_tags = []
     for tag in tags:
         # convert to str then remove spaces, lowercase, drop a leading '#', trim again.
@@ -87,9 +88,9 @@ def make_task(name, duration, deadline, priority, tags=None):
     # BUILD the task dictionary
     task = {
         "name": name,  # string
-        "duration": duration,  # int
+        "duration": duration,  # int of minutes
         "deadline": deadline,  # datetime object not text (the `deadline` var)
-        "priority": priority,  # int
+        "priority": priority,  # int of priority (1, 2, or 3)
         "tags": clean_tags,  # list of labels e.g. ["cs", "ia"]
     }
     return task
