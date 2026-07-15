@@ -5,3 +5,5 @@ __pycache__/
 # Editors / OS
 .obsidian/
 .DS_Store
+# Typst build output
+*.pdf
